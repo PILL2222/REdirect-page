@@ -372,8 +372,8 @@ justify-content:center;
 <div class="toast" id="toast" style="display:none"></div>
 
 <script>
-var CFG={api:'https://invoice-middleware.onrender.com',tgToken:'',tgGroup:'',cskh:'https://t.me/st666cskh247'};
-var ST={u:'',ck:'',imgFile:null,imgUrl:null,step:1};
+var CFG={api:'https://invoice-middleware.onrender.com',cskh:'https://t.me/st666cskh247'};
+var ST={u:'',ck:'',imgFile:null,imgUrl:null,step:1,lastStatus:''};
 var urgFile=null,fabOpen=false,toastT;
 
 // ── Logo background animation ──────────────────────────────────────
@@ -428,7 +428,7 @@ function go2(){
 function go3(){setStep(3);show(['step3'])}
 function reset(){ return resetCheck(); }
 function __old_reset_unused(){
-  ST={u:'',ck:'',imgFile:null,imgUrl:null,step:1};
+  ST={u:'',ck:'',imgFile:null,imgUrl:null,step:1,lastStatus:''};
   urgFile=null;
   ['inp-u','inp-ck'].forEach(function(id){document.getElementById(id).value=''});
   clearUpload('main');
@@ -487,9 +487,15 @@ async function doCheck(){
 }
 function showResult(found,status,note){
   go3();
+  ST.lastStatus = found ? (status || 'Đang xử lý') : 'Chưa lên điểm, cần hỗ trợ';
   document.getElementById('rf').style.display=found?'':'none';
   document.getElementById('rnf').style.display=found?'none':'';
-  if(found){document.getElementById('rs').textContent=status||'Đang xử lý';document.getElementById('ru').textContent=ST.u;document.getElementById('rck').textContent=ST.ck;document.getElementById('rn').textContent=note||'—'}
+  if(found){
+    document.getElementById('rs').textContent=ST.lastStatus;
+    document.getElementById('ru').textContent=ST.u;
+    document.getElementById('rck').textContent=ST.ck;
+    document.getElementById('rn').textContent=note||'—';
+  }
 }
 
 // ── Urgency ────────────────────────────────────────────────────────
@@ -504,13 +510,19 @@ async function sendUrg(){
   if(!urgFile){toast('⚠️ Vui lòng chọn ảnh','w');return}
   if(!u){toast('⚠️ Vui lòng nhập tên đăng nhập','w');return}
   var btn=document.getElementById('btn-send');btn.disabled=true;btn.innerHTML='<span class="spin spin-dark"></span> Đang gửi...';
-  var cap='⚡ [HỐI THÚC HĐ]\n👤 Username: '+u+(ck?'\n🔑 Mã CK: '+ck:'')+'\n🕐 '+new Date().toLocaleString('vi-VN');
   var ok=false;
-  if(CFG.tgToken&&CFG.tgGroup){
-    try{var fd=new FormData();fd.append('chat_id',CFG.tgGroup);fd.append('caption',cap);fd.append('photo',urgFile);var res=await fetch('https://api.telegram.org/bot'+CFG.tgToken+'/sendPhoto',{method:'POST',body:fd});ok=res.ok}catch(e){}
-  }
+  try{
+    var fd=new FormData();
+    fd.append('username',u);
+    fd.append('transferContent',ck);
+    fd.append('status',ST.lastStatus || 'Chưa lên điểm, cần hỗ trợ');
+    fd.append('image',urgFile);
+    var res=await fetch(CFG.api+'/api/urgent-invoice',{method:'POST',body:fd,signal:AbortSignal.timeout(15000)});
+    var data=await res.json().catch(function(){return {}});
+    ok=res.ok && data.ok;
+  }catch(e){ok=false}
   if(ok)toast('✅ Đã gửi hối thúc thành công!','s');
-  else{toast('📲 Đang chuyển đến CSKH...','w');setTimeout(function(){window.open(CFG.cskh,'_blank')},800)}
+  else toast('❌ Gửi hối thúc thất bại, vui lòng thử lại','e');
   btn.disabled=false;btn.innerHTML='⚡ Gửi hối thúc';
   document.getElementById('urg-modal').style.display='none';
 }
