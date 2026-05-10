@@ -120,20 +120,11 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Be
 .result-icon{font-size:40px;display:block;text-align:center;margin-bottom:10px}
 .result-status-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:5px}
 .result-status{font-size:20px;font-weight:800;text-align:center;margin-bottom:16px}
-.rr{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:start;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.rr{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
 .rr:last-child{border-bottom:none}
-.rk{color:var(--text2);line-height:1.45}
-.rv{font-weight:600;color:var(--text);text-align:right;max-width:none;min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.45}
-.rr:has(#rn){align-items:start}
-.rr:has(#rn) .rv{text-align:left;white-space:normal}
-
+.rk{color:var(--text2)}
+.rv{font-weight:600;color:var(--text);text-align:right;max-width:60%;word-break:break-all}
 .action-row{width:100%;max-width:500px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-
-
-@media(max-width:480px){
-  .rr{grid-template-columns:1fr;gap:4px}
-  .rv{text-align:left}
-}
 
 /* ── FAB ── */
 .cskh-fab{position:fixed;bottom:20px;right:16px;z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
@@ -214,14 +205,59 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Be
 }
 
 
+/* ── Footer copyright ── */
 .st-footer{
   width:100%;
   text-align:center;
   margin:26px 0 18px;
   font-size:12px;
   color:var(--text3);
-  opacity:.9;
+  opacity:.92;
   letter-spacing:.2px;
+  position:relative;
+  z-index:2;
+}
+
+/* ── Result layout fixes ── */
+#step3{
+  width:100%!important;
+  max-width:600px!important;
+  margin:0 auto!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+#step3 .result-card{
+  width:100%;
+}
+.rr{
+  display:grid!important;
+  grid-template-columns:120px minmax(0,1fr)!important;
+  gap:12px!important;
+  align-items:start!important;
+}
+.rk{
+  line-height:1.45!important;
+}
+.rv{
+  max-width:none!important;
+  min-width:0!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important;
+  line-height:1.45!important;
+}
+.rr:has(#rn) .rv{
+  text-align:left!important;
+  white-space:normal!important;
+}
+@media(max-width:480px){
+  .rr{
+    grid-template-columns:1fr!important;
+    gap:4px!important;
+  }
+  .rv{
+    text-align:left!important;
+  }
 }
 
 </style>
@@ -290,25 +326,14 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Be
     </div>
   </div>
 
-  <div id="step3" style="
-display:none;
-width:100%;
-max-width:600px;
-margin:0 auto;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-">
+  <div id="step3" style="display:none;width:100%;max-width:500px;display:none;flex-direction:column;align-items:center">
     <div class="result-card result-found" id="rf" style="display:none">
       <span class="result-icon">✅</span>
       <div class="result-status-label">Trạng thái hóa đơn</div>
       <div class="result-status" id="rs" style="color:var(--green)">—</div>
       <div class="rr"><span class="rk">Tài khoản</span><span class="rv" id="ru">—</span></div>
       <div class="rr"><span class="rk">Mã giao dịch</span><span class="rv" id="rck">—</span></div>
-      <div class="rr" id="rn-row" style="display:none;background:rgba(79,142,247,.05);border-radius:8px;padding:10px;margin-top:4px;border:1px solid rgba(79,142,247,.15)">
-  <span class="rk" style="color:var(--blue)">📝 Ghi chú từ CS</span>
-  <span class="rv" id="rn" style="color:var(--text);font-weight:500;text-align:left;word-break:break-word;white-space:pre-line;max-width:100%">—</span>
-</div>
+      <div class="rr" id="rn-row" style="display:none;background:rgba(79,142,247,.05);border-radius:8px;padding:10px;margin-top:4px;border:1px solid rgba(79,142,247,.15)"><span class="rk" style="color:var(--blue)">📝 Ghi chú từ CS</span><span class="rv" id="rn" style="color:var(--text);font-weight:500;text-align:left;word-break:break-word;white-space:pre-line;max-width:100%">—</span></div>
     </div>
     <div class="result-card result-notfound" id="rnf" style="display:none">
       <span class="result-icon">🔎</span>
@@ -324,9 +349,7 @@ justify-content:center;
   </div>
 
 
-  <div class="st-footer">
-    © Bản quyền thuộc ST666
-  </div>
+  <div class="st-footer">© Bản quyền thuộc ST666</div>
 
 </div>
 
@@ -429,8 +452,7 @@ function go2(){
   ST.u=u;setStep(2);show(['step2']);
 }
 function go3(){setStep(3);show(['step3'])}
-function reset(){ return resetCheck(); }
-function __old_reset_unused(){
+function reset(){
   ST={u:'',ck:'',imgFile:null,imgUrl:null,step:1};
   urgFile=null;
   ['inp-u','inp-ck'].forEach(function(id){document.getElementById(id).value=''});
@@ -492,14 +514,20 @@ function showResult(found,status,note){
   go3();
   document.getElementById('rf').style.display=found?'':'none';
   document.getElementById('rnf').style.display=found?'none':'';
-  if(found){document.getElementById('rs').textContent=status||'Đang xử lý';document.getElementById('ru').textContent=ST.u;document.getElementById('rck').textContent=ST.ck;var noteEl=document.getElementById('rn');
-var noteRow=document.getElementById('rn-row');
-if(note&&note.trim()){
-  noteEl.textContent=note;
-  noteRow.style.display='flex';   // hiện
-} else {
-  noteRow.style.display='none';   // ẩn nếu không có ghi chú
-}
+  if(found){
+    document.getElementById('rs').textContent=status||'Đang xử lý';
+    document.getElementById('ru').textContent=ST.u;
+    document.getElementById('rck').textContent=ST.ck;
+    // Hiển thị ghi chú chỉ khi có nội dung
+    var noteEl=document.getElementById('rn');
+    var noteRow=document.getElementById('rn-row');
+    if(note&&note.trim()){
+      noteEl.textContent=note;
+      noteRow.style.display='flex';
+    } else {
+      noteRow.style.display='none';
+    }
+  }
 }
 
 // ── Urgency ────────────────────────────────────────────────────────
@@ -542,24 +570,25 @@ function toast(msg,t){
 }
 document.getElementById('inp-u').onkeydown=function(e){if(e.key==='Enter')go2()};
 document.getElementById('inp-ck').onkeydown=function(e){if(e.key==='Enter')doCheck()};
+</script>
 
+<script>
 function resetCheck(){
   try{
-    document.getElementById('step1').style.display='block';
-    document.getElementById('step2').style.display='none';
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const rf = document.getElementById('rf');
+    const rnf = document.getElementById('rnf');
 
-    var step3 = document.getElementById('step3');
-    if(step3){
-      step3.style.display='none';
-    }
+    if(step1) step1.style.display = 'block';
+    if(step2) step2.style.display = 'none';
+    if(step3) step3.style.display = 'none';
+    if(rf) rf.style.display = 'none';
+    if(rnf) rnf.style.display = 'none';
 
-    var rf = document.getElementById('rf');
-    var rnf = document.getElementById('rnf');
-    if(rf) rf.style.display='none';
-    if(rnf) rnf.style.display='none';
-
-    var s1=document.getElementById('s1'), s2=document.getElementById('s2'), s3=document.getElementById('s3');
-    var sl1=document.getElementById('sl1'), sl2=document.getElementById('sl2');
+    const s1=document.getElementById('s1'), s2=document.getElementById('s2'), s3=document.getElementById('s3');
+    const sl1=document.getElementById('sl1'), sl2=document.getElementById('sl2');
 
     if(s1) s1.classList.add('active');
     if(s2) s2.classList.remove('active');
@@ -567,22 +596,30 @@ function resetCheck(){
     if(sl1) sl1.classList.remove('active');
     if(sl2) sl2.classList.remove('active');
 
-    var inpCk = document.getElementById('inp-ck');
-    var inpImg = document.getElementById('inp-img');
-    var upv = document.getElementById('upv');
-    var uph = document.getElementById('uph');
+    const ck = document.getElementById('inp-ck');
+    const img = document.getElementById('inp-img');
+    const upv = document.getElementById('upv');
+    const uph = document.getElementById('uph');
 
-    if(inpCk) inpCk.value='';
-    if(inpImg) inpImg.value='';
-    if(upv){ upv.innerHTML=''; upv.style.display='none'; }
-    if(uph) uph.style.display='block';
+    if(ck) ck.value = '';
+    if(img) img.value = '';
+    if(upv){ upv.innerHTML = ''; upv.style.display = 'none'; }
+    if(uph) uph.style.display = 'block';
 
     window.scrollTo({top:0, behavior:'smooth'});
   }catch(e){
-    console.error('Reset error:', e);
+    console.error('resetCheck error:', e);
   }
 }
 
+window.addEventListener('load', function(){
+  document.querySelectorAll('button').forEach(function(btn){
+    if((btn.textContent || '').includes('Tra lại')){
+      btn.onclick = resetCheck;
+    }
+  });
+});
 </script>
+
 </body>
 </html>
