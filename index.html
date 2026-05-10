@@ -305,7 +305,10 @@ justify-content:center;
       <div class="result-status" id="rs" style="color:var(--green)">—</div>
       <div class="rr"><span class="rk">Tài khoản</span><span class="rv" id="ru">—</span></div>
       <div class="rr"><span class="rk">Mã giao dịch</span><span class="rv" id="rck">—</span></div>
-      <div class="rr"><span class="rk">Ghi chú</span><span class="rv" id="rn">—</span></div>
+      <div class="rr" id="rn-row" style="display:none;background:rgba(79,142,247,.05);border-radius:8px;padding:10px;margin-top:4px;border:1px solid rgba(79,142,247,.15)">
+  <span class="rk" style="color:var(--blue)">📝 Ghi chú từ CS</span>
+  <span class="rv" id="rn" style="color:var(--text);font-weight:500;text-align:left;word-break:break-word;white-space:pre-line;max-width:100%">—</span>
+</div>
     </div>
     <div class="result-card result-notfound" id="rnf" style="display:none">
       <span class="result-icon">🔎</span>
@@ -489,7 +492,14 @@ function showResult(found,status,note){
   go3();
   document.getElementById('rf').style.display=found?'':'none';
   document.getElementById('rnf').style.display=found?'none':'';
-  if(found){document.getElementById('rs').textContent=status||'Đang xử lý';document.getElementById('ru').textContent=ST.u;document.getElementById('rck').textContent=ST.ck;document.getElementById('rn').textContent=note||'—'}
+  if(found){document.getElementById('rs').textContent=status||'Đang xử lý';document.getElementById('ru').textContent=ST.u;document.getElementById('rck').textContent=ST.ck;var noteEl=document.getElementById('rn');
+var noteRow=document.getElementById('rn-row');
+if(note&&note.trim()){
+  noteEl.textContent=note;
+  noteRow.style.display='flex';   // hiện
+} else {
+  noteRow.style.display='none';   // ẩn nếu không có ghi chú
+}
 }
 
 // ── Urgency ────────────────────────────────────────────────────────
