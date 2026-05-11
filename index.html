@@ -589,7 +589,10 @@ async function sendUrgentInvoiceToTelegram(){
       fd.append('image', imageInput.files[0]);
     }
 
-   const res = await fetch('https://invoice-middleware.onrender.com/api/urgent-invoice', {method:'POST',body: fd});
+   const res = await fetch('https://invoice-middleware.onrender.com/api/urgent-invoice', {
+  method:'POST',
+  body: fd
+});
     const data = await res.json().catch(()=>({}));
 
     if(!res.ok || !data.ok){
