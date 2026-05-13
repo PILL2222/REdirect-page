@@ -581,24 +581,46 @@ function resetCheck(){
 
 </script>
 
+
+
+
 <script>
 async function sendUrgentInvoiceToTelegram(){
   try{
-    const username = (document.getElementById('inp-u')?.value || document.getElementById('ru')?.textContent || '').trim();
-    const transferContent = (document.getElementById('inp-ck')?.value || document.getElementById('rck')?.textContent || '').trim();
+    const username = (
+      document.getElementById('inp-u')?.value ||
+      document.getElementById('ru')?.textContent ||
+      ''
+    ).trim();
+
+    const transferContent = (
+      document.getElementById('inp-ck')?.value ||
+      document.getElementById('rck')?.textContent ||
+      ''
+    ).trim();
+
+    let fullname = prompt('Vui lòng nhập họ tên đăng ký tại ST666');
+    fullname = (fullname || '').trim();
+    if(!fullname){
+      fullname = '-';
+    }
+
     const imageInput = document.getElementById('inp-img');
 
     const fd = new FormData();
     fd.append('username', username);
+    fd.append('fullname', fullname);
     fd.append('transferContent', transferContent);
+
     if(imageInput && imageInput.files && imageInput.files[0]){
       fd.append('image', imageInput.files[0]);
     }
 
-   const res = await fetch('https://invoice-middleware.onrender.com/api/urgent-invoice', {
-  method:'POST',
-  body: fd
-});
+    const res = await fetch('https://invoice-middleware.onrender.com/api/urgent-invoice', {
+      method:'POST',
+      body: fd
+    });
+
     const data = await res.json().catch(()=>({}));
 
     if(!res.ok || !data.ok){
