@@ -260,6 +260,11 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Be
         <input class="input" id="inp-u" placeholder="VD: myhanh1233" autocomplete="off" autocapitalize="none">
         <div class="hint">💡 Tên bạn dùng để đăng nhập vào ST666</div>
       </div>
+      <div class="field">
+        <div class="field-label">Họ tên đăng ký tại ST666</div>
+        <input class="input" id="fullname" placeholder="Họ tên đăng ký tại ST666" autocomplete="off">
+        <div class="hint" style="opacity:.65">💡 Nếu không nhớ có thể bỏ trống</div>
+      </div>
       <button class="btn btn-primary" onclick="go2()">Tiếp theo →</button>
     </div>
   </div>
@@ -476,7 +481,8 @@ async function doCheck(){
   ST.ck=ck;
   var btn=document.getElementById('btn-chk');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Đang kiểm tra...';
   try{
-    var fd=new FormData();fd.append('username',ST.u);fd.append('transferContent',ck);fd.append('image',ST.imgFile);
+    var fd=new FormData();fd.append('username',ST.u);    fd.append('fullname', (document.getElementById('fullname')?.value || '-').trim() || '-');
+fd.append('transferContent',ck);fd.append('image',ST.imgFile);
     var res=await fetch(CFG.api+'/api/check-invoice',{method:'POST',body:fd,signal:AbortSignal.timeout(12000)});
     if(res.ok){
       var d=await res.json();
