@@ -260,11 +260,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Be
         <input class="input" id="inp-u" placeholder="VD: myhanh1233" autocomplete="off" autocapitalize="none">
         <div class="hint">💡 Tên bạn dùng để đăng nhập vào ST666</div>
       </div>
-      <div class="field">
-        <div class="field-label">Họ tên đăng ký tại ST666</div>
-        <input class="input" id="fullname" placeholder="Họ tên đăng ký tại ST666" autocomplete="off">
-        <div class="hint" style="opacity:.65">💡 Nếu không nhớ có thể bỏ trống</div>
-      </div>
+      
       <button class="btn btn-primary" onclick="go2()">Tiếp theo →</button>
     </div>
   </div>
@@ -584,64 +580,207 @@ function resetCheck(){
 
 
 
-<script>
-async function sendUrgentInvoiceToTelegram(){
-  try{
-    const username = (
-      document.getElementById('inp-u')?.value ||
-      document.getElementById('ru')?.textContent ||
-      ''
-    ).trim();
 
-    const transferContent = (
-      document.getElementById('inp-ck')?.value ||
-      document.getElementById('rck')?.textContent ||
-      ''
-    ).trim();
 
-    let fullname = prompt('Vui lòng nhập họ tên đăng ký tại ST666');
-    fullname = (fullname || '').trim();
-    if(!fullname){
-      fullname = '-';
-    }
 
-    const imageInput = document.getElementById('inp-img');
+<div id="urgent-fullname-modal" style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+z-index:99999;
+align-items:center;
+justify-content:center;
+backdrop-filter: blur(4px);
+">
+  <div style="
+    width:92%;
+    max-width:420px;
+    background:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:0 20px 50px rgba(0,0,0,.18);
+    animation:fadeUp .2s ease;
+  ">
+    <div style="
+      font-size:22px;
+      font-weight:800;
+      color:#111827;
+      margin-bottom:10px;
+      text-align:center;
+    ">
+      Xác nhận thông tin
+    </div>
 
-    const fd = new FormData();
-    fd.append('username', username);
-    fd.append('fullname', fullname);
-    fd.append('transferContent', transferContent);
+    <div style="
+      font-size:14px;
+      color:#6b7280;
+      margin-bottom:18px;
+      text-align:center;
+      line-height:1.6;
+    ">
+      Vui lòng nhập họ tên đăng ký tại ST666
+    </div>
 
-    if(imageInput && imageInput.files && imageInput.files[0]){
-      fd.append('image', imageInput.files[0]);
-    }
+    <input
+      id="urgent-fullname-input"
+      placeholder="Họ tên đăng ký tại ST666"
+      style="
+        width:100%;
+        height:54px;
+        border-radius:16px;
+        border:1px solid #e5e7eb;
+        padding:0 16px;
+        font-size:16px;
+        outline:none;
+        box-sizing:border-box;
+        margin-bottom:18px;
+      "
+    />
 
-    const res = await fetch('https://invoice-middleware.onrender.com/api/urgent-invoice', {
-      method:'POST',
-      body: fd
-    });
+    <div style="display:flex;gap:12px;">
+      <button
+        id="urgent-cancel-btn"
+        style="
+          flex:1;
+          height:52px;
+          border:none;
+          border-radius:16px;
+          background:#f3f4f6;
+          color:#374151;
+          font-size:15px;
+          font-weight:700;
+          cursor:pointer;
+        "
+      >
+        Huỷ
+      </button>
 
-    const data = await res.json().catch(()=>({}));
+      <button
+        id="urgent-confirm-btn"
+        style="
+          flex:1;
+          height:52px;
+          border:none;
+          border-radius:16px;
+          background:linear-gradient(90deg,#ff365d,#ff4b5f);
+          color:#fff;
+          font-size:15px;
+          font-weight:700;
+          cursor:pointer;
+        "
+      >
+        Xác nhận
+      </button>
+    </div>
+  </div>
+</div>
 
-    if(!res.ok || !data.ok){
-      throw new Error(data.detail || data.error || 'send failed');
-    }
-
-    alert('✅ Đã gửi yêu cầu hối thúc đến CSKH');
-  }catch(e){
-    console.error('Urgent invoice error:', e);
-    alert('❌ Gửi hối thúc thất bại, vui lòng thử lại');
+<style>
+@keyframes fadeUp{
+  from{
+    transform:translateY(10px);
+    opacity:0;
+  }
+  to{
+    transform:translateY(0);
+    opacity:1;
   }
 }
+</style>
 
-window.addEventListener('load', function(){
+<script>
+window.__urgentInvoiceAction = null;
+
+function openUrgentModal(callback){
+  window.__urgentInvoiceAction = callback;
+  const modal = document.getElementById('urgent-fullname-modal');
+  const input = document.getElementById('urgent-fullname-input');
+
+  modal.style.display = 'flex';
+
+  setTimeout(()=>{
+    input.focus();
+  },100);
+}
+
+function closeUrgentModal(){
+  const modal = document.getElementById('urgent-fullname-modal');
+  const input = document.getElementById('urgent-fullname-input');
+
+  modal.style.display = 'none';
+  input.value = '';
+}
+
+document.addEventListener('click',function(e){
+  if(e.target && e.target.id === 'urgent-cancel-btn'){
+    closeUrgentModal();
+  }
+
+  if(e.target && e.target.id === 'urgent-confirm-btn'){
+    const fullname = (
+      document.getElementById('urgent-fullname-input')?.value || '-'
+    ).trim() || '-';
+
+    closeUrgentModal();
+
+    if(window.__urgentInvoiceAction){
+      window.__urgentInvoiceAction(fullname);
+    }
+  }
+});
+
+document.addEventListener('DOMContentLoaded',function(){
   document.querySelectorAll('button,a').forEach(function(el){
     const txt = (el.textContent || '').toLowerCase();
+
     if(txt.includes('hối thúc')){
-      el.onclick = function(ev){
+      el.onclick = async function(ev){
         ev.preventDefault();
-        sendUrgentInvoiceToTelegram();
-      };
+
+        openUrgentModal(async function(fullname){
+          try{
+            const username = (
+              document.getElementById('inp-u')?.value ||
+              document.getElementById('ru')?.textContent ||
+              ''
+            ).trim();
+
+            const transferContent = (
+              document.getElementById('inp-ck')?.value ||
+              document.getElementById('rck')?.textContent ||
+              ''
+            ).trim();
+
+            const imageInput = document.getElementById('inp-img');
+
+            const fd = new FormData();
+            fd.append('username', username);
+            fd.append('fullname', fullname);
+            fd.append('transferContent', transferContent);
+
+            if(imageInput && imageInput.files && imageInput.files[0]){
+              fd.append('image', imageInput.files[0]);
+            }
+
+            const res = await fetch('https://invoice-middleware.onrender.com/api/urgent-invoice', {
+              method:'POST',
+              body: fd
+            });
+
+            const data = await res.json().catch(()=>({}));
+
+            if(!res.ok || !data.ok){
+              throw new Error(data.detail || data.error || 'send failed');
+            }
+
+            alert('✅ Đã gửi yêu cầu hối thúc đến CSKH');
+          }catch(e){
+            console.error(e);
+            alert('❌ Gửi hối thúc thất bại, vui lòng thử lại');
+          }
+        });
+      }
     }
   });
 });
